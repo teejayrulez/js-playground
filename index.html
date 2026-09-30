@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment • all files combined</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
+
+    body {
+      background: #f5f7fb;
+      transition: background 0.3s, color 0.3s;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+    body.dark { background: #121212; color: #f0f0f0; }
+    body.dark .card { background: #1e1e1e; color: #eee; border-color: #333; }
+    body.dark button { background: #333; color: white; border-color: #555; }
+    body.dark .top-bar { background: #1f1f1f; }
+    body.dark .mobile-menu { background: #1e1e1e; }
+    body.dark .mobile-menu a { color: #eee; border-color: #333; }
+    body.dark input { background: #2a2a2a; border-color: #444; color: white; }
+    body.dark .user-list { background: #252525; }
+    body.dark .nav-links a { color: #ddd; }
+
+    .app { max-width: 1300px; margin: 0 auto; }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 0.8rem 1.5rem;
+      border-radius: 40px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .menu-icon { display: none; font-size: 1.8rem; cursor: pointer; color: #2563eb; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+    .nav-links a { text-decoration: none; color: #1f2937; font-weight: 500; }
+    .nav-links a:hover { color: #2563eb; }
+
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 28px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+    .mobile-menu.active { display: flex; }
+    .mobile-menu a {
+      padding: 0.8rem 0;
+      text-decoration: none;
+      color: #1f2937;
+      font-weight: 500;
+      border-bottom: 1px solid #eee;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.8rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 1.8rem 1.5rem;
+      box-shadow: 0 15px 30px -12px rgba(0,0,0,0.1);
+      border: 1px solid #e9eef3;
+      display: flex;
+      flex-direction: column;
+    }
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2563eb;
+    }
+    body.dark .card h3 { color: #a78bfa; }
+
+    button {
+      background: #2563eb;
+      border: none;
+      color: white;
+      font-weight: 500;
+      padding: 10px 18px;
+      border-radius: 40px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      margin: 0.5rem 0;
+      width: fit-content;
+      transition: 0.2s;
+    }
+    button:hover { background: #1d4ed8; transform: translateY(-1px); }
+    button.secondary {
+      background: transparent;
+      border: 1px solid #2563eb;
+      color: #2563eb;
+    }
+    button.secondary:hover { background: #2563eb10; }
+
+    /* ---- COOL ANIMATION BOX ---- */
+    .box-stage {
+      position: relative;
+      width: 100%;
+      height: 90px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #eef2ff, #f5f3ff);
+      margin: 1rem 0;
+      padding: 10px;
+    }
+    body.dark .box-stage {
+      background: linear-gradient(90deg, #1a1a2e, #16213e);
+    }
+    #box {
+      width: 70px;
+      height: 70px;
+      border-radius: 18px;
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+      background-size: 300% 300%;
+      animation: gradientShift 3s ease infinite;
+      box-shadow:
+        0 0 15px rgba(37, 99, 235, 0.5),
+        0 0 30px rgba(124, 58, 237, 0.3);
+    }
+    #box::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+      filter: blur(12px);
+      opacity: 0.6;
+      z-index: -1;
+      animation: gradientShift 3s ease infinite;
+    }
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .box-trail {
+      position: absolute;
+      height: 70px;
+      top: 10px;
+      width: 20px;
+      border-radius: 18px;
+      background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    #message { font-weight: 500; margin-top: 0.8rem; }
+    .input-group { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.5rem 0; }
+    input {
+      padding: 12px 16px;
+      border-radius: 40px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .user-list {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      background: #f8faff;
+      padding: 1rem;
+      border-radius: 20px;
+      min-height: 80px;
+    }
+    .badge {
+      display: inline-block;
+      background: #2563eb20;
+      color: #2563eb;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 30px;
+      font-weight: 500;
+    }
+    .toggle-dark { background: #e2e8f0; color: #1e293b; }
+    body.dark .toggle-dark { background: #334155; color: white; }
+
+    @media (max-width: 750px) {
+      .nav-links { display: none; }
+      .menu-icon { display: block; }
+    }
+
+    .color { font-size: 100px; color: green; }
+    .big { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top-bar">
+      <div class="logo"><h1>assignment</h1></div>
+      <i class="fas fa-bars menu-icon" id="menuToggle"></i>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Docs</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </div>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#">Home</a>
+      <a href="#">Features</a>
+      <a href="#">Docs</a>
+      <a href="#">About</a>
+    </div>
+
+    <div class="grid">
+
+      <!-- CARD 1 -->
+      <div class="card">
+        <h3><i class="fas fa-paint-brush"></i> ClassList & Dark Mode</h3>
+        <h1 id="header" class="big" style="font-size: 1.8rem; text-decoration: underline;">Hello World</h1>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="fontBtn"><i class="fas fa-font"></i> Change font size</button>
+          <button id="darkBtn" class="toggle-dark"><i class="fas fa-moon"></i> Dark Mode</button>
+        </div>
+      </div>
+
+      <!-- CARD 2: Users & Scores -->
+      <div class="card">
+        <h3><i class="fas fa-users"></i> Users &amp; Scores</h3>
+        <div class="user-list" id="userListContainer">Loading...</div>
+        <p style="margin-top: 8px; font-size:0.9rem;" id="filterStatus">Showing all users</p>
+        <button id="filterBtn" class="secondary"><i class="fas fa-sync"></i> Re-run filter</button>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="card">
+        <h3><i class="fas fa-cube"></i> Box Animation</h3>
+        <div class="box-stage">
+          <div class="box-trail" id="trail"></div>
+          <div id="box"></div>
+        </div>
+        <button id="moveBtn"><i class="fas fa-arrow-right"></i> Move box</button>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="card">
+        <h3><i class="fas fa-check-circle"></i> Register</h3>
+        <div class="input-group">
+          <input id="name" type="text" placeholder="Last Name">
+          <input id="password" type="password" placeholder="Password (min 7 chars)">
+        </div>
+        <button id="submit"><i class="fas fa-user-plus"></i> Register</button>
+        <p id="message"></p>
+      </div>
+
+      <!-- CARD 5 -->
+      <div class="card">
+        <h3><i class="fas fa-cloud-download-alt"></i> Async fetch</h3>
+        <button id="fetchBtn"><i class="fas fa-download"></i> Load Users</button>
+        <div id="fetchResult" style="max-height:130px; overflow-y:auto; font-size:0.85rem; margin-top:10px; background:#f0f4ff; padding:8px; border-radius:16px;"></div>
+      </div>
+
+      <!-- CARD 6 -->
+      <div class="card">
+        <h3><i class="fas fa-code-branch"></i> Spread &amp; Mobile menu</h3>
+        <p><i class="fas fa-mobile-alt"></i> Tap the menu icon on mobile width.</p>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0;">
+          <span class="badge">spread</span>
+          <span class="badge">...active</span>
+        </div>
+        <button id="spreadBtn" class="secondary"><i class="fas fa-flask"></i> Show spread effect</button>
+        <p id="spreadOutput" style="font-size:0.9rem; margin-top:6px;">Click to see array merging</p>
+      </div>
+
+      <!-- CARD 7 -->
+      <div class="card">
+        <h3><i class="fas fa-redo-alt"></i> Loops &amp; Assessment</h3>
+        <div id="loopResult" style="font-size:0.9rem; margin-bottom:8px;">Click to run.</div>
+        <button id="loopBtn"><i class="fas fa-play"></i> Run loop demo</button>
+      </div>
+
+      <!-- CARD 8 -->
+      <div class="card">
+        <h3><i class="fas fa-calculator"></i> Math &amp; Random</h3>
+        <p>Random whole (1-100): <strong id="randomNum">-</strong></p>
+        <button id="randomBtn"><i class="fas fa-dice"></i> Generate</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // ============ 1. CLASS LIST + DARK MODE ============
+      var header = document.getElementById('header');
+
+      document.getElementById('fontBtn').addEventListener('click', function () {
+        header.classList.add('color');
+        header.classList.remove('big');
+        header.style.color = '#2563eb';
+        header.style.textDecoration = 'none';
+      });
+
+      document.getElementById('darkBtn').addEventListener('click', function () {
+        document.body.classList.toggle('dark');
+      });
+
+      // ============ 2. USERS & SCORES (show all first, filter on click) ============
+      var users = [
+        { name: "Jeff",  age: 26, score: 55  },
+        { name: "Jon",   age: 21, score: 78  },
+        { name: "Peter", age: 40, score: 34  },
+        { name: "Pete",  age: 40, score: 100 }
+      ];
+
+      var isFiltered = false;
+
+      function renderUsers(list) {
+        var container = document.getElementById('userListContainer');
+        container.innerHTML = list.map(function (u) {
+          return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e5e7eb;">' +
+                   '<span><i class="fas fa-user"></i> ' + u.name + ' (age ' + u.age + ')</span>' +
+                   '<span class="badge">score ' + u.score + '</span>' +
+                 '</div>';
+        }).join('');
+      }
+
+      function updateFilterStatus() {
+        var status = document.getElementById('filterStatus');
+        if (isFiltered) {
+          status.textContent = 'Filtered: score >= 50 (passing users only)';
+          status.style.color = '#2563eb';
+          status.style.fontWeight = '600';
+        } else {
+          status.textContent = 'Showing all users';
+          status.style.color = '#666';
+          status.style.fontWeight = '400';
+        }
+      }
+
+      document.getElementById('filterBtn').addEventListener('click', function () {
+        if (!isFiltered) {
+          var highscore = users.filter(function (u) { return u.score >= 50; });
+          renderUsers(highscore);
+          isFiltered = true;
+          console.log('Filtered (score >= 50):', highscore);
+        } else {
+          renderUsers(users);
+          isFiltered = false;
+          console.log('Showing all users:', users);
+        }
+        updateFilterStatus();
+      });
+
+      // Initial load: show EVERYONE
+      renderUsers(users);
+      updateFilterStatus();
+
+      // ============ 3. BOX ANIMATION (COOL EFFECT) ============
+      var box = document.getElementById('box');
+      var trail = document.getElementById('trail');
+      var moveBtn = document.getElementById('moveBtn');
+      var tom = 10;
+      var animeInterval = null;
+
+      moveBtn.addEventListener('click', function () {
+        if (animeInterval) clearInterval(animeInterval);
+        tom = 10;
+        box.style.left = '10px';
+        box.style.transform = 'rotate(0deg)';
+        trail.style.opacity = '1';
+        trail.style.left = '0px';
+
+        animeInterval = setInterval(function () {
+          if (tom >= 500) {
+            clearInterval(animeInterval);
+            animeInterval = null;
+            trail.style.opacity = '0';
+            return;
+          }
+          tom += 4;
+          box.style.left = tom + 'px';
+          box.style.transform = 'rotate(' + (tom / 5) + 'deg)';
+          trail.style.left = (tom - 20) + 'px';
+        }, 16);
+      });
+
+      // ============ 4. FORM VALIDATION ============
+      var submitBtn = document.getElementById('submit');
+      var nameInput = document.getElementById('name');
+      var pwdInput = document.getElementById('password');
+      var messageEl = document.getElementById('message');
+
+      submitBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var lastName = nameInput.value.trim();
+        var myPassword = pwdInput.value.trim();
+
+        if (lastName === '') {
+          messageEl.innerHTML = 'Please enter your name';
+          return;
+        }
+        if (myPassword.length < 7) {
+          messageEl.innerHTML = 'Password less than the required number (min 7)';
+          return;
+        }
+        messageEl.innerHTML = 'Registration Successful';
+      });
+
+      // ============ 5. ASYNC FETCH ============
+      document.getElementById('fetchBtn').addEventListener('click', async function () {
+        var fetchResult = document.getElementById('fetchResult');
+        fetchResult.innerHTML = 'loading...';
+        try {
+          var res = await fetch('https://jsonplaceholder.typicode.com/users');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var data = await res.json();
+          fetchResult.innerHTML = data.map(function (u) {
+            return '<div><i class="fas fa-user-circle"></i> ' + u.name + ' (' + u.email + ')</div>';
+          }).join('');
+        } catch (err) {
+          fetchResult.innerHTML = 'API not work: ' + err.message;
+          console.log('API not work', err);
+        }
+      });
+
+      // ============ 6. MOBILE MENU + SPREAD ============
+      document.getElementById('menuToggle').addEventListener('click', function () {
+        document.getElementById('mobileMenu').classList.toggle('active');
+      });
+
+      document.getElementById('spreadBtn').addEventListener('click', function () {
+        var arr1 = [1, 2, 3];
+        var arr2 = [4, 5, 6];
+        var merged = [...arr1, ...arr2];
+        var obj1 = { a: 1, b: 2 };
+        var obj2 = { c: 3, d: 4 };
+        var mergedObj = { ...obj1, ...obj2 };
+        document.getElementById('spreadOutput').innerHTML =
+          'merged array: [' + merged + '] <br> merged object: ' + JSON.stringify(mergedObj);
+      });
+
+      // ============ 7. LOOPS & ASSESSMENT ============
+      document.getElementById('loopBtn').addEventListener('click', function () {
+        var scores = [70, 30, 50, 60, -1, 40];
+        var output = '';
+
+        for (var i = 0; i < scores.length; i++) {
+          if (scores[i] < 0) {
+            output += 'Invalid Score (' + scores[i] + ') - break<br>';
+            break;
+          }
+          output += 'Score: ' + scores[i] + ' - ';
+          output += scores[i] >= 50 ? 'Passed<br>' : 'Failed<br>';
+        }
+
+        var names = ['Alice', 'James', 'Tom', 'Ben', 'Kelvin'];
+        var count = 0;
+        for (var j = 0; j < names.length; j++) {
+          if (names[j].length >= 5) count++;
+        }
+        output += '<br>Names with length &gt;= 5: ' + count;
+
+        document.getElementById('loopResult').innerHTML = output;
+      });
+
+      // ============ 8. MATH RANDOM ============
+      function generateRandom() {
+        var rand = Math.floor(Math.random() * 100) + 1;
+        document.getElementById('randomNum').textContent = rand;
+      }
+      document.getElementById('randomBtn').addEventListener('click', generateRandom);
+      generateRandom();
+
+    });
+  </script>
+</body>
+</html>
